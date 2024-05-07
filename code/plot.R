@@ -323,3 +323,33 @@ plot_enrichGO <- function(genes, n_category = 15, object = "human", fname = "enr
         return(list(ego = ego, fig = fig))
     }
 }
+
+
+
+plot_enrichKEGG <- function(genes, n_category = 15, object = "human", organism = "hsa", fname = "enrichKEGG", save_dir = ".", width = 7, height = 7, return_results = FALSE){
+    library(clusterProfiler)
+    library(ggplot2)
+    if (object == "mouse"){
+        library(org.Mm.eg.db)
+        OrgDb <- "org.Mm.eg.db"
+    } else{
+        library(org.Hs.eg.db)
+        OrgDb <- "org.Hs.eg.db"
+    }
+    ids <- bitr(genes, fromType = "SYMBOL", toType = "ENTREZID", OrgDb = OrgDb)
+    kk <- enrichKEGG(ids$ENTREZID, organism = organism, keyType = "kegg", pAdjustMethod = "BH")
+    if (dim(kk)[1] > 0){
+        write.csv(kk, file = paste(save_dir, paste(fname, "csv", sep = "."), sep = "/"))
+        pdf(paste(save_dir, paste(fname, "pdf", sep = "."), sep = "/"), width = width, height = height)
+        fig <- barplot(kk, showCategory = n_category, drop = TRUE) + 
+                labs(title = fname) +
+                theme(axis.text.y = element_text(size = 10))
+        print(fig)
+        dev.off()
+    } else{
+        fig <- NULL
+    }
+    if (return_results){
+        return(list(kk = kk, fig = fig))
+    }
+}
