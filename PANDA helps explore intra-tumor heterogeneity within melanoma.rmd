@@ -1,7 +1,7 @@
 ---
 title: "PANDA helps explore intra-tumor heterogeneity within melanoma"
 author: "Meng-Guo Wang"
-date: "2024-05-07"
+date: "2024-08-17"
 output:
   html_document: default
   pdf_document: default
@@ -44,7 +44,7 @@ names_sc_labels <- rownames(sc_labels)
 sc_labels <- sc_labels$celltype
 names(sc_labels) <- names_sc_labels
 
-sc_results <- sc_train(sc_counts, sc_labels, n_archetypes_vec = 10, tol = 1e-8, maxiter = 2000, do_initialize = TRUE, do_plot = TRUE, n_hvgs = 2000, n_markers = 20, n_sample_cells = 500, do_parallel = TRUE, n_cores = 6, save_res = TRUE, save_dir = "./PANDA_results/sc_results")
+sc_results <- sc_train(sc_counts, sc_labels, n_archetypes_vec = 10, n_cores = 6, save_dir = "./PANDA_results/sc_results")
 ```
 
 ### Deconvolution of spatial transcriptomics data
@@ -54,7 +54,7 @@ In the second step, PANDA performs deconvolution on the spatial transcriptomics 
 ```{r st_train, eval=FALSE}
 st_counts <- read.csv(st_counts_path, header = TRUE, row.names = 1)
 
-st_results <- st_train(st_counts, sc_results = sc_results, n_hvgs = 5000, sigma = 0.3, tol = 1e-8, maxiter = 2000, save_res = TRUE, save_dir = "./PANDA_results/st_results")
+st_results <- st_train(st_counts, sc_results = sc_results, save_dir = "./PANDA_results/st_results")
 ```
 
 ### Extracting results
